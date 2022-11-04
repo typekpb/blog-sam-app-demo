@@ -2,15 +2,18 @@
 
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.SAMPLE_TABLE;
+console.info('SAMPLE_TABLE ' + tableName);
 
 // Create a DocumentClient that represents the query to add an item
 const dynamodb = require('aws-sdk/clients/dynamodb');
-const config = {
-  endpoint: 'http://host.containers.internal:4566',
-  region: 'eu-central-1'
+
+const isLocalDynamoDB = process.env.LOCAL_DYNAMODB;
+console.info('LOCAL_DYNAMODB ' + isLocalDynamoDB);
+const localDynanoDBConfig = {
+    endpoint: 'http://host.containers.internal:4566',
+    region: 'eu-central-1'
 }
-const docClient = new dynamodb.DocumentClient(config);
-// const docClient = new dynamodb.DocumentClient();
+const docClient = isLocalDynamoDB === "true" ? new dynamodb.DocumentClient(localDynanoDBConfig) : new dynamodb.DocumentClient();
 
 /**
  * A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
