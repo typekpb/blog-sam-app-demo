@@ -5,7 +5,12 @@ const tableName = process.env.SAMPLE_TABLE;
 
 // Create a DocumentClient that represents the query to add an item
 const dynamodb = require('aws-sdk/clients/dynamodb');
-const docClient = new dynamodb.DocumentClient();
+const config = {
+  endpoint: 'http://host.containers.internal:4566',
+  region: 'eu-central-1'
+}
+const docClient = new dynamodb.DocumentClient(config);
+// const docClient = new dynamodb.DocumentClient();
 
 /**
  * A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
@@ -36,12 +41,12 @@ exports.getByIdHandler = async (event) => {
       statusCode: 200,
       body: JSON.stringify(item)
     };
-  } catch (ResourceNotFoundException) {
+  } catch (error) {
     response = {
-        statusCode: 404,
-        body: "Unable to call DynamoDB. Table resource not found."
+        statusCode: 500,
+        body: JSON.stringify(error)
     };
-  }
+}
  
   // All log statements are written to CloudWatch
   console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);

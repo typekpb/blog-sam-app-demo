@@ -2,7 +2,12 @@
 
 // Create a DocumentClient that represents the query to add an item
 const dynamodb = require('aws-sdk/clients/dynamodb');
-const docClient = new dynamodb.DocumentClient();
+const config = {
+    endpoint: 'http://host.containers.internal:4566',
+    region: 'eu-central-1'
+  }
+const docClient = new dynamodb.DocumentClient(config);
+// const docClient = new dynamodb.DocumentClient();
 
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.SAMPLE_TABLE;
@@ -38,10 +43,10 @@ exports.putItemHandler = async (event) => {
             statusCode: 200,
             body: JSON.stringify(body)
         };
-    } catch (ResourceNotFoundException) {
+    } catch (error) {
         response = {
-            statusCode: 404,
-            body: "Unable to call DynamoDB. Table resource not found."
+            statusCode: 500,
+            body: JSON.stringify(error)
         };
     }
 
